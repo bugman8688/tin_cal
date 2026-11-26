@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>zh_CN</string>
+	<key>CFBundleExecutable</key>
+	<string>TinCal</string>
+	<key>CFBundleIdentifier</key>
+	<string>local.hanbing.tincal</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>TinCal</string>
+	<key>CFBundleDisplayName</key>
+	<string>tin_cal</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSRemindersUsageDescription</key>
+	<string>用于在月历中显示你的待办提醒事项</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>TinCal 需要访问你的提醒事项，以在月历中显示当天的待办。</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+</dict>
+</plist>
