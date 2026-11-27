@@ -65,6 +65,21 @@ final class HolidayStore: ObservableObject {
         day(for: date)?.isOffDay
     }
 
+    /// 法定节假日名（如「国庆节」），供月历副标题使用。
+    ///
+    /// **不受 `officialYears` 限制**（未发布年份也返回名字，便于跨年展示）；
+    /// 与 `day(for:)` / `isOffDay(for:)` 的年份门槛刻意不同，勿据此推断放假状态。
+    func name(for date: Date) -> String? {
+        cleanedName(days[Self.key(for: date)]?.name)
+    }
+
+    /// 数据边界清洗一次：去首尾空白后判空。内部层（如 resolver）不再重复清洗。
+    private func cleanedName(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
     // MARK: - 刷新
 
     func refresh(primarySourceID: String) async {

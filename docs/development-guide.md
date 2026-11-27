@@ -79,13 +79,14 @@ Sources/TinCal/
 1. 面板高度由 `PanelMetrics` 统一计算，折叠态与展开态两套常量；新增区块要同步这两个值。
 2. 面板宽度固定 320pt，提醒区高度固定（内部 `ScrollView`），避免被列表撑破。
 3. 横滑翻月与单击选中的手势在 `StatusBarController.handleScroll` 与 `DayCell.onTap`，改动后必须真机验证不误触。
+4. 延展区的展开条件只有一个出处：`CalendarPanel.activeDetailDayKey`（有未完成提醒 **或** 选中日为官方调休日）；调休提示文案口径见 `.trae/specs/add-holiday-adjust-hint/spec.md`。
 
 ## 测试约定
 
 - 测试框架：`swift-testing`（`@Test` + `#expect`），位于 `Tests/TinCalTests/`。
 - 优先测纯函数与纯几何（日期键、农历、节气、节假日解析、提醒筛选 / 排序、命中判定），UI 与 EventKit 走真机验证。
 - 新增日期相关用例时固定使用 `Asia/Shanghai` 时区构造时间，不要依赖运行机器的本地时区。
-- 当前基线：56 个用例全绿。
+- 当前基线：101 个用例全绿。
 
 ## 验证清单（改完代码后）
 

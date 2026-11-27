@@ -7,6 +7,7 @@ final class SettingsStore: ObservableObject {
         static let showWeekday = "settings.showWeekday"
         static let showSeconds = "settings.showSeconds"
         static let primarySourceID = "settings.primarySourceID"
+        static let showFestivals = "settings.showFestivals"
     }
 
     private let userDefaults: UserDefaults
@@ -27,6 +28,11 @@ final class SettingsStore: ObservableObject {
         didSet { userDefaults.set(primarySourceID, forKey: Key.primarySourceID) }
     }
 
+    /// 是否在月历副标题显示节日名（含法定节假日名），默认开启。
+    @Published var showFestivals: Bool {
+        didSet { userDefaults.set(showFestivals, forKey: Key.showFestivals) }
+    }
+
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
         // 初始化时的赋值不会触发 didSet，因此这里显式读取持久化值。
@@ -34,6 +40,7 @@ final class SettingsStore: ObservableObject {
         self.showWeekday = userDefaults.object(forKey: Key.showWeekday) as? Bool ?? true
         self.showSeconds = userDefaults.object(forKey: Key.showSeconds) as? Bool ?? false
         self.primarySourceID = userDefaults.object(forKey: Key.primarySourceID) as? String ?? "github"
+        self.showFestivals = userDefaults.object(forKey: Key.showFestivals) as? Bool ?? true
     }
 
     // MARK: - 时间格式化

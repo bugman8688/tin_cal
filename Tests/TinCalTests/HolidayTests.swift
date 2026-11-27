@@ -110,3 +110,35 @@ private let fullFormatJSON = """
     // 已发布年份可正常命中。
     #expect(store.isOffDay(for: makeDate(2026, 10, 1)) == true)
 }
+
+// MARK: - 法定节假日名（副标题用）
+
+@Test @MainActor func holidayNameBeyondOfficialYears() {
+    let store = HolidayStore(snapshotURL: snapshotURL)
+
+    // name(for:) 不校验 officialYears：2027 也有名字，但旗标仍为 nil。
+    #expect(store.name(for: makeDate(2027, 10, 1)) == "国庆节")
+    #expect(store.isOffDay(for: makeDate(2027, 10, 1)) == nil)
+    #expect(store.day(for: makeDate(2027, 10, 1)) == nil)
+}
+
+@Test @MainActor func holidayNameMatchesStoredDayName() {
+    let store = HolidayStore(snapshotURL: snapshotURL)
+
+    let name = store.name(for: makeDate(2026, 10, 1))
+    #expect(name == store.day(for: makeDate(2026, 10, 1))?.name)
+    #expect(name?.isEmpty == false, "真实快照的法定节假日名应为非空中文名")
+}
+
+@Test @MainActor func holidayNameIgnoresBlankName() throws {
+    // 格式 A 允许 name 为空串 / 纯空白；装载不受年份限制，故用 2027 日期验证。
+    let json = #"{"year":2027,"days":[{"name":"","date":"2027-05-01","isOffDay":true},{"name":"   ","date":"2027-05-02","isOffDay":false}]}"#
+    let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("tincal_blank_name_\(UUID().uuidString).json")
+    try Data(json.utf8).write(to: url)
+    defer { try? FileManager.default.removeItem(at: url) }
+
+    let store = HolidayStore(snapshotURL: url)
+    #expect(store.name(for: makeDate(2027, 5, 1)) == nil)
+    #expect(store.name(for: makeDate(2027, 5, 2)) == nil)
+}

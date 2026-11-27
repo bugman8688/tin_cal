@@ -113,6 +113,10 @@ struct SettingsView: View {
                 sourceRow(source)
             }
 
+            // 「显示节日」约束的是取到的节日是否展示，逻辑上先于「从哪个源取」。
+            Toggle("显示节日", isOn: $settings.showFestivals)
+                .font(.system(size: 12))
+
             HStack(spacing: 8) {
                 Text("主源")
                     .font(.system(size: 11))

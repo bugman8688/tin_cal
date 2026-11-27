@@ -59,3 +59,24 @@ private func withSettings(_ body: (SettingsStore) -> Void) {
         #expect(settings.timeText(for: makeShanghaiDate(hour: 15, minute: 41)) == "11月23日 周一 下午3:41")
     }
 }
+
+// MARK: - 节日开关
+
+@Test func showFestivalsDefaultsToTrue() {
+    withSettings { settings in
+        #expect(settings.showFestivals == true, "未设置过时应默认开启")
+    }
+}
+
+@Test func showFestivalsPersistsFalse() {
+    // 必须写非默认值，否则「重新读取」只是又验证了一遍默认值。
+    let suiteName = "tincal.tests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    var store = SettingsStore(userDefaults: defaults)
+    store.showFestivals = false
+
+    let reloaded = SettingsStore(userDefaults: defaults)
+    #expect(reloaded.showFestivals == false)
+}

@@ -70,11 +70,14 @@ struct CalendarPanel: View {
     private let weekdaySymbols = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
 
-    /// 实际展示提醒区的日期键：仅在选中且当天存在未完成提醒时为非 nil。
-    /// 无提醒的日期不展开，避免出现大块留白；刷新后提醒被清空也会自动回落折叠态。
-    private var activeReminderDayKey: String? {
-        guard let key = state.expandedDayKey, !reminders.reminders(for: key).isEmpty else { return nil }
-        return key
+    /// 实际展示延展区的日期键：选中后，当天有未完成提醒 **或** 是官方调休日时为非 nil。
+    /// 调休日即使没有未完成提醒也展开，用于显示标题栏的「(节日，休息/上班)」提示；
+    /// 调休信息受 `HolidayStore.day(for:)` 的 `officialYears` 门槛约束，未发布年份不会命中。
+    private var activeDetailDayKey: String? {
+        guard let key = state.expandedDayKey else { return nil }
+        if !reminders.reminders(for: key).isEmpty { return key }
+        if let date = MonthGrid.date(forKey: key), holidays.day(for: date) != nil { return key }
+        return nil
     }
 
     /// 有未完成提醒的日期键集合（含前月 / 后月页），供 DayCell 亮灯泡。
@@ -104,7 +107,7 @@ struct CalendarPanel: View {
         // 折叠态只包月历区；选中某天时从底部追加提醒区。
         .frame(
             width: PanelMetrics.width,
-            height: activeReminderDayKey == nil ? PanelMetrics.collapsedPanelHeight : PanelMetrics.panelHeight,
+            height: activeDetailDayKey == nil ? PanelMetrics.collapsedPanelHeight : PanelMetrics.panelHeight,
             alignment: .top
         )
         .background(PanelPalette.background)
@@ -115,7 +118,7 @@ struct CalendarPanel: View {
 
     @ViewBuilder
     private var reminderArea: some View {
-        if let dayKey = activeReminderDayKey {
+        if let dayKey = activeDetailDayKey {
             // 点击条目直达系统「提醒事项」App，不做详情层，减少操作层级。
             ReminderListView(dayKey: dayKey) {
                 reminders.openRemindersApp()

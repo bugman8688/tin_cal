@@ -6,7 +6,19 @@
 
 | 版本号 | 变更主体 | 作者 | 变更日期 |
 |--------|----------|------|----------|
+| v0.2.0 | 新增节日副标题与官方调休提示 | hanbing | 2026-11-27 |
 | v0.1.0 | 首次公开释放：macOS 菜单栏日历 TinCal | hanbing | 2026-11-26 |
+
+## [2026-11-27] 新增节日副标题与官方调休提示
+
+### 变更内容
+- 月历副标题优先级：节气 > 节日名 > 农历（DaySubtitle / Festival / LegalHoliday / DayCell）
+- 法定节假日名仅在正日子展示；未发布年份也显示节日名，但休 / 班角标仍不渲染
+- 设置页新增「显示节日」开关（SettingsStore.showFestivals，默认开启）
+- 选中日为官方调休日时延展区展开并在标题栏显示「(节日，休息/上班)」（HolidayAdjustHint）
+- MonthGrid.date(forKey:) 与 HolidayStore.name(for:) 收敛日期键解析与节日常清洗口径
+- 需求文档：新增 .trae/specs/add-festivals、add-holiday-adjust-hint，同步 add-calendar-reminders S3 口径
+- 测试：新增节日 / 调休 / 副标题用例，基线由 56 提升至 101 个用例全绿
 
 ## [2026-11-26] 首次公开释放：macOS 菜单栏日历 TinCal
 

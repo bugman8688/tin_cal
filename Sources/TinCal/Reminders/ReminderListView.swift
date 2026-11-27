@@ -6,6 +6,7 @@ struct ReminderListView: View {
     let onOpen: () -> Void
 
     @EnvironmentObject private var store: ReminderStore
+    @EnvironmentObject private var holidays: HolidayStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -21,14 +22,29 @@ struct ReminderListView: View {
         store.reminders(for: dayKey)
     }
 
+    /// 调休提示（仅选中日）：非官方年份或普通日期返回 nil，标题栏不追加文案。
+    private var adjustHint: HolidayAdjustHint? {
+        guard let date = MonthGrid.date(forKey: dayKey),
+              let holiday = holidays.day(for: date) else { return nil }
+        return HolidayAdjustHint.make(name: holidays.name(for: date), isOffDay: holiday.isOffDay)
+    }
+
     private var header: some View {
         HStack(spacing: 6) {
             Text(Self.title(for: dayKey))
                 .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(PanelPalette.primaryText)
-            Text("\(items.count) 项")
-                .font(.system(size: 10))
-                .foregroundStyle(PanelPalette.secondaryText)
+            if let hint = adjustHint {
+                Text(hint.text)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(hint.kind == .offDay ? PanelPalette.offDayBadge : PanelPalette.workDayBadge)
+            }
+            // 无未完成提醒时不再渲染「0 项」，避免与调休提示并列产生噪音。
+            if !items.isEmpty {
+                Text("\(items.count) 项")
+                    .font(.system(size: 10))
+                    .foregroundStyle(PanelPalette.secondaryText)
+            }
             Spacer(minLength: 0)
         }
     }
@@ -118,14 +134,8 @@ struct ReminderListView: View {
     // MARK: - 标题
 
     static func title(for dayKey: String) -> String {
-        guard let date = parse(dayKey) else { return dayKey }
+        guard let date = MonthGrid.date(forKey: dayKey) else { return dayKey }
         return titleFormatter.string(from: date)
-    }
-
-    private static func parse(_ key: String) -> Date? {
-        let parts = key.split(separator: "-").compactMap { Int($0) }
-        guard parts.count == 3 else { return nil }
-        return MonthGrid.calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
     }
 
     private static let titleFormatter: DateFormatter = {

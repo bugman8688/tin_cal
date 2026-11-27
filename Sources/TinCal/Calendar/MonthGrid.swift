@@ -68,6 +68,14 @@ enum MonthGrid {
         calendar.dateInterval(of: .month, for: date)?.start
     }
 
+    /// 由日期键反解为 Date（Asia/Shanghai 当天 00:00）；非法键返回 nil。
+    /// 与 `key(for:)` 互为逆运算，作为日期键口径的单一事实源。
+    static func date(forKey key: String) -> Date? {
+        let parts = key.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
+    }
+
     /// 日期键 `yyyy-MM-dd`（Asia/Shanghai）。提醒事项模块复用此口径，避免两处漂移。
     static func key(for date: Date) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
