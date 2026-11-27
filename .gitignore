@@ -14,3 +14,4 @@ logs/
 
 # AI 协作指南（仅本地使用，不入库）
 AGENTS.md
+.trae/
